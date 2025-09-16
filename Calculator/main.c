@@ -1,0 +1,63 @@
+/*
+ * main.c
+ *
+ *  Created on: Jul 1, 2024
+ *      Author: Shiko
+ */
+#include "keypad.h"
+#include "lcd.h"
+#include<util/delay.h>
+
+volatile uint8 i=0;
+
+int main()
+{
+	LCD_init();
+	uint8 data[4];
+	volatile uint8 result=0;
+
+
+	while(1)
+	{
+		data[i]=KEYPAD_getPressedKey();//pressed on the number or operation
+
+		if (data[i]>=0 && data[i] <=9)
+		{
+			LCD_intgerToString(data[i]);//dispaly the number in the LCD
+		}
+		else
+		{
+			LCD_displayCharacter(data[i]);//dispaly the operation in the LCD
+		}
+
+		_delay_ms(500);
+
+		if(i==3)
+		{
+			switch(data[1])
+			{
+			case'*':
+				result = data[0]*data[2];
+				LCD_intgerToString(result);
+				break;
+			case'+':
+				result = data[0] + data[2];
+				LCD_intgerToString(result);
+				break;
+			case'-' :
+				result = data[0] - data[2];
+				LCD_intgerToString(result);
+				break;
+			}
+		}
+
+		i++;
+
+		if(i>3)
+		{
+			i=0;
+			_delay_ms(500);
+			LCD_clearScreen();
+		}
+	}
+}
